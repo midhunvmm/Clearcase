@@ -1,0 +1,375 @@
+multisite
+++==++==++
+
+Reqmastership
+=============
+If the user wants to just checkout the file and dont want to check in, then he dont have to request for mastership. user can run the command:
+
+ct co -unres -nmaster <filename>.  If the user want this file to check in then he has to request for mastership.
+
+
+
+
+Enable reqmaster
+****************
+	
+Check whether reqmastership is enabled for the vob:
+#/usr/atria/bin/multitool reqmaster -acl -get vob:/vobs/GNSS_45nm
+   Replica vob:/vobs/GNSS_45nm
+   Request For Mastership ACL:
+    Everyone: Read
+Read means its not enabled , if output shows change, then reqmastership is enabled at the target site.
+
+
+To Enable Reqmastership do:
+# /usr/atria/bin/multitool reqmaster -acl -edit vob:/vobs/GNSS_45nm
+"/var/tmp/tmp07774" 3 lines, 79 characters
+  Replica vob:/vobs/GNSS_45nm
+  Request For Mastership ACL:
+    Everyone: Change
+~
+~
+~
+~
+~
+"/var/tmp/tmp07774" 3 lines, 81 characters
+Replace the ACL? [no] yes
+
+# /usr/atria/bin/multitool reqmaster -acl -get vob:/vobs/GNSS_45nm
+# Replica vob:/vobs/GNSS_45nm
+# Request For Mastership ACL:
+    Everyone: Change
+
+#  /usr/atria/bin/multitool reqmaster -enable replica:Bangalore@/vobs/GNSS_45nm
+Requests for mastership enabled in the replica object for "replica:Bangalore@/vobs/GNSS_45nm"
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Changing Reqmastership.
+***********************
+Check  Mastership:
+******************
+
+for change the mastership to all objects of the vob:
+
+Target site: Dallas
+
+First desc and check whether the vob mastership not already at the mentioned target site.
+
+For a vob:  ct desc vob:<vob_tag>
+dbdlinlogin102.india.ti.com[103]% ct desc vob:/vobs/ccaseadm
+versioned object base "/vobs/ccaseadm"
+  created 2001-08-08T20:30:06+05:30 by Super-User (root.other@ccaseapd)
+  "VOB for Texas Instruments India ClearCase Administration team."
+  master replica: Bangalore@/vobs/ccaseadm
+  replica name: Bangalore
+
+set the view and cd into that vob from source side (this common for all):
+#ct setview midhun_view
+#cd /vobs/ccaseadm
+#/usr/atria/bin/multitool chmaster -all -l Dallas (here Dallas is target replica)
+
+
+Transfer the mastership of a particular element.
+
+For a file:	ct desc <file_name>@@
+dbdlinlogin102.india.ti.com[226]% ct desc /vobs/ccaseadm/MIDHUN@@
+directory element "/vobs/ccaseadm/MIDHUN@@"
+  created 2017-09-12T13:21:08+05:30 by Midhun VM (x0249993.sys_mng@dbdlinlogin45.india.ti.com)
+  element type: directory
+  master replica: Bangalore@/vobs/ccaseadm
+  Protection:
+    User : x0249993 : rwx
+    Group: sys_mng  : rwx
+    Other:          : r-x
+
+#/usr/atria/bin/multitool chmaster  Dallas /vobs/ccaseadm/MIDHUN@@ (Dallas= target)
+
+
+#/usr/atria/bin/multitool lsmaster replica:Bangalore ---->For know the mastership information at replica level
+bdlinlogin102.india.ti.com[117]% mt lsmaster replica:Bangalore
+master replica: Bangalore@/vobs/ccaseadm  "versioned object base" /vobs/ccaseadm
+master replica: Bangalore@/vobs/ccaseadm  "directory element" /vobs/ccaseadm/.@@
+master replica: Bangalore@/vobs/ccaseadm  "directory element" /vobs/ccaseadm/lost+found@@
+master replica: Bangalore@/vobs/ccaseadm  "directory element" /vobs/ccaseadm/asic@@      
+master replica: Bangalore@/vobs/ccaseadm  "directory element" /vobs/ccaseadm/eee@@       
+master replica: Bangalore@/vobs/ccaseadm  "directory element" /vobs/ccaseadm/iag@@       
+master replica: Bangalore@/vobs/ccaseadm  "directory element" /vobs/ccaseadm/msp@@ 
+
+
+#/usr/atria/bin/multitool chmaster Dallas brtype:main ---> for branch.
+
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Requesting mastership
+*********************
+
+Set the view and cd into vob in target side
+
+#/usr/atria/bin/multitool reqmaster req_test@@/main --->Requesting mastership for directory
+#/usr/atria/bin/multitool reqmaster test.c@@/main ----> For element
+#/usr/atria/bin/multitool reqmaster brtype:main ----> for branchs
+
+	
+================================================================================================================================
+
+
+
+
+Syncing issue
+*************
+
+Check whether the synching is done properly from oslo to Bangalore by checking the epoch table with the command:
+****************************************************************************************************************
+/usr/atria/bin/multitool lsepoch -invob <vob_tag> | grep -v del
+
+
+To see where the VOB is currently replicated to, run the following command: 
+*************************************************************************** 
+# /usr/atria/bin/multitool lsepoch -invob <VOB Tag> | grep Oplog
+							(OR) 
+# /usr/atria/bin/cleartool lsrep -l -invob /vobs/GNSS_45nm, This command could be used to check both the replicas and also to check the mastership 
+details for a vob.
+
+
+Manual Synchronization:
+***********************
+Export Phase:
+
+If your sites are connected electronically, you can use store-and-forward to send the packet (–fship) or place it in a storage bay (–ship).
+The following example uses the –fship option to send the packet immediately:
+
+multitool syncreplica –export –maxsize 1m –fship boston_hub@\dev
+Generating synchronization packet C:\Program Files\Rational\ClearCase\var
+\shipping\ms_ship\outgoing\sync_bangalore_30-Oct-02.14.35.49_2468_1
+ - shipping order file is C:\Program Files\Rational\ClearCase\var\shipping
+\ms_ship\outgoing\sh_o_sync_bangalore_30-Oct-02.14.35.49_2468_1
+Attempting to forward/deliver generated packets...
+ -- Forwarded/delivered packet C:\Program Files\Rational\ClearCase\var
+\shipping\ms_ship\outgoing\sync_bangalore_30-Oct-02.14.35.49_2468_1
+
+The following example uses the –out option to save the packet as an output file and includes the –maxsize option to divide the logical packet into appropriately sized physical packets. The packet files can then be sent by electronic mail or copied onto diskettes, CDs, or tape.
+
+multitool syncreplica –export –maxsize 1m –out c:\packets\update1 
+boston_hub@\dev
+Generating synchronization packet c:\packets\update1
+
+Import Phase:
+
+Use the lspacket command to verify that the packet has arrived.
+multitool lspacket
+Packet is: /opt/rational/clearcase/shipping/ms_ship/incoming/sync_bangalore_30
+-Oct-02.14.35.49_2468_1
+Packet type: Update
+VOB family identifier is: 12a3456b.78c901d2.e3ab.45:67:89:c0:1d:e2
+Comment supplied at packet creation is:
+Packet intended for the following targets:
+boston_hub
+The packet sequence number is 1
+Apply the packet at the receiving replica. Use the syncreplica –import command to apply the changes in the packet to the replica.
+This example specifies the –receive option; syncreplica imports any packets it finds in the incoming shipping directories.
+
+multitool syncreplica –import –receive
+Applied sync. packet /opt/rational/clearcase/shipping/ms_ship/incoming/
+sync_bangalore_30
+-Oct-02.14.35.49_2468_1 to VOB /net/minuteman/vobstg/dev.vbs
+
+================================================================================================================================
+
+Renaming a replica name:
+************************
+Example:
+********
+dbdlinlogin102.india.ti.com[159]% ct rename replica:original@/vobs/midhun replica:Bangalore@/vobs/midhun
+Renamed replica from "original" to "Bangalore".
+
+
+
+================================================================================================================================
+Vob replication process
+***********************
+  
+VOB Manager Export Process
+++++++++++++++++++++++++++ 
+All replication requests should come in via VOB Manager (http://ccvobmgr.design.ti.com/). If a ticket asks to replicate a VOB without coming though 
+VOB Manager, point the requestor to VOB Manager and close the ticket since new tickets will be created for the user. 
+
+All information needed to export a replica is contained in the STARS ticket that VOB Manager will generate.
+
+The first thing to check is to see if the replica is at the other site already. Sometimes people do not know how to check to see where a VOB is 
+replicated. To see where the VOB is currently replicated to, run the following command
+
+
+# /usr/atria/bin/multitool lsepoch -invob <VOB Tag> | grep Oplog or /usr/atria/bin/cleartool lsreplica -invob <vob_tag>
+For example: 
+/usr/atria/bin/multitool lsepoch -invob /vobs/wtbu/OMAPSW_DSP | grep Oplog
+Oplog IDs for row "Bangalore" (@ ccasexsvr3.india.ti.com):
+Oplog IDs for row "Bangalore_Mindtree_ODC" (@ 192.168.220.42):
+Oplog IDs for row "Bangalore_Sasken_ODC" (@ 192.168.222.42):
+Oplog IDs for row "Bangalore_Saskenpune_ODC" (@ 192.168.231.11):
+Oplog IDs for row "Bangalore_Wipro_ODC" (@ 10.24.247.65):
+Oplog IDs for row "Bangalore_backup" (@ ccasebkp2.india.ti.com):
+Oplog IDs for row "Dallas" (@ wtsdccase01.dal.design.ti.com):
+Oplog IDs for row "Israel" (@ ccvbs02.isr.asp.ti.com):
+Oplog IDs for row "Israel_BACKUP" (@ ccasebk-il.isr.asp.ti.com):
+Oplog IDs for row "NAUCM-Dextra" (@ 10.87.228.16):
+Oplog IDs for row "NAUCM-Sasken" (@ 10.87.230.16):
+Oplog IDs for row "NA_HUB" (@ dlewzcc11.dal.design.ti.com):
+Oplog IDs for row "Nice" (@ svrccase0.tif.ti.com):
+Oplog IDs for row "Nice_009_Sofia_EXT" (@ dmmyccase01.ucm2.emeaucm.ext.ti.com):
+Oplog IDs for row "Shanghai" (@ dhuccs01.china.design.ti.com):
+Oplog IDs for row "Shinjuku" (@ ccsvrs.tdc.tijp.ti.com):
+Oplog IDs for row "TIB" (@ dbgs11.itg.tide.ti.com):
+Oplog IDs for row "TIF_hotsite" (@ ncdrccase091.tif.ti.com):
+Oplog IDs for row "Taiwan" (@ tawtbu01.taiwan.ti.com):
+
+Note that this will show you replicas that currently exist as well as ones that have been deleted. Sometimes there are requests to update a replica but when checked,
+the replica has been deleted. Deleting a replica does not remove the deleted replica from the target site; it is up to the site where the replica is deleted to physically 
+remove the replica. Deleted replicas can not be updated. The VOB must be re-replicated to the site. 
+
+STARS tickets to replica VOBs contain the following information: 
+Dear Admin,
+
+VOB Replication request submitted by Patnaik Rakesh
+Actions:
+1- Export packets
+Vob tag: /cdb/scfalconv10gs70cmltii
+From: Bangalore
+To: Dallas
+Server: veyroncc01.dal.design.ti.com
+Other Replicas: dlewzcc06.dal.design.ti.com
+2- Update VOB attributes at Bangalore by running:
+3- close ticket
+
+Request details are accessible at:
+http://ccvobmgr.design.ti.com/request/replications.php?replicationId=180&viewType=ALL&itcm_key=t5xwm1hlryznw7mx
+
+Best Regards,
+Clearcase Vobs Manager Team
+
++++GMDATA:REPLICATIONID=180+++
++++EMAIL_TRIGGER:CCVOBSMGR_STARS_REPLICATION+++
+
+Creating the replication package
+
+
+Replication should be done from the RDC site. This is because the VOB is locked while the replication is in process.
+Locking the VOB at the RDC site is not a problem because locking here does not interfere with any ongoing work. 
+
+The following command shows which RDC server to use for the replication: 
+/usr/atria/bin/multitool lsepoch -invob /cdb/scfalconv10gs70cmltii | grep Oplog
+Oplog IDs for row "Bangalore" (@ ccasexsvr15.india.ti.com):
+Oplog IDs for row "Bangalore_backup" (@ ccasebkp3.india.ti.com):
+Oplog IDs for row "Dallas" (@ veyroncc01.dal.design.ti.com):
+Oplog IDs for row "NA_HUB" (@ dlewzcc09.dal.design.ti.com):
+
+
+In this case, the hot site server is ccasebkp3.india.ti.com. ssh to this server: 
+ssh ccasebkp3.india.ti.com
+
+
+Use the following format to replica and send to the target site: 
+/usr/atria/bin/multitool mkreplica -export -work /clearcase/bkp_replicas/tmp/$$ \
+-c " Created by <Analyst> requested by <reqestor> AR<STARS ticket number>" \
+-max 50m -fship <target server>:<replica name>@<VOB tag>
+
+
+For example: 
+/usr/atria/bin/multitool mkreplica -export -work /clearcase/bkp_replicas/tmp/$$ \
+-c "Created by Raghavendra requested by Patnaik Rakesh (a0196390) AR#5407000" \
+-max 50m -fship veyroncc01.dal.design.ti.com:Dallas@/cdb/scfalconv10gs70cmltii
+
+
+It is good to include the STARS ticket number in the comment. This helps tie the replication to the request. 
+
+If more then one server:replica needs to be sent to, just add this on to the end of the command. For instance, to send replica to Dallas and NA_HUB enter something like: 
+veyroncc01.dal.design.ti.com:Dallas@/cdb/scfalconv10gs70cmltii 
+dlewzcc09.dal.design.ti.com:NA_HUB@/cdb/scfalconv10gs70cmltii
+
+
+If the replica is large and/or going to a site known to have network communication problems, create the packets but do not use -fship to ship them. 
+When you use -fship the packets are created, shipped, and removed from the outgoing shipping bay. Instead use the -out option. With this, the packets 
+are saved. You then do a mkorder to ship them to the server. The advantage is that if some or all of the packets are not received, you can resend them. If you use -fship and the packets are not received, you will need to delete the replica, re-create the packets, and re-send them. 
+
+You can create a directory under /clearcase/bkp_replicas/Dallas to place the packets. 
+
+The format for the -out option is very close to the one above. Here is an example: 
+/data/sudo/bin/sudo /usr/atria/bin/multitool mkreplica -export -work /clearcase/bkp_replicas/tmp/$$ \
+-c "Created by Raghavendra requested by Patnaik Rakesh (a0919269) AR#5407000" \
+-max 50m -out /clearcase/bkp_replicas/Dallas/repl2Dallas-cdb-scfalconv10gs70cmltii \ veyroncc01.dal.design.ti.com:Dallas@/cdb/scfalconv10gs70cmltii
+
+
+VOB Manager Import Process
+++++++++++++++++++++++++++
+Check if replica is already present at the target site by running:
+
+/usr/atria/bin/multitool lsreplica -invob <Vob_tag>
+
+Packets are available at the incoming bay which is at:
+
+cd /opt/rational/clearcase/shipping/ms_ship/incoming
+
+Running the Import Command
+
+
+The following is a table showing the information you have for importing the replica with some sample data: 
+
+Label  Value  
+VOB Tag  /cdb/wcs45nm  
+VOB Owner  wdccm  
+VOB Group  wdc  
+Bangalore Host  ccasexsvr11.india.ti.com  
+Bangalore Storage Path  /clearcase/vb062/wtbu43/wcs45nm.vbs  
+Bangalore_backup Host  ccasebkp4.india.ti.com  
+Bangalore_backup Storage Path  /clearcase/bkp_vb048/wcs45nm.vbs  
+Shipping Bay  /opt/rational/clearcase/shipping/ms_ship/incoming  
+
+Login to the server: 
+rsh ccasexsvr11.india.ti.com
+
+
+The commands will be run as the VOB owner so become the owner and make sure the group is set: 
+/data/sudo/bin/sudo su - wdccm
+newgrp wdc
+
+
+Navigate to the incoming bay: 
+cd /opt/rational/clearcase/shipping/ms_ship/incoming
+
+do an ls and find the replica name.
+
+Then run:
+
+/usr/atria/bin/multitool mkreplica -import -work /ccasestore/multisitereplicadata/$$ -tag <VOB Tag> \
+-vob <VOB storage path> -c " Created By <analyst name> Requested By <requestor name> AR#" -host <Host Name> \
+-hpath <VOB storage path down to .vbs> -gpath <VOB storage path> -perms -public \
+-vre <Bangalore or Bangalore_backup> ./<replica name>
+
+
+For example: 
+/usr/atria/bin/multitool mkreplica -import -work /ccasestore/multisitereplicadata/$$ -tag /cdb/wcs45nm \
+-vob /clearcase/vb062/wtbu43/wcs45nm.vbs -c " Created By Raghavendra N Requested By Shrimali Arun AR# AR# 5394986" \
+-host ccasexsvr11.india.ti.com -hpath /clearcase/vb062/wtbu43/wcs45nm.vbs -gpath /clearcase/vb062/wtbu43/wcs45nm.vbs -perms -public \
+-vre Bangalore ./repl_-cdb-wcs45nm_Israel2Bangalore-2009-10-12
+
+
+Add Attributes to Replica
+
+
+For all replicas, local information needs to be added. This information not only helps us in Bangalore but is replicated to other sites for others to use. 
+#/data/sudo/bin/sudo /apps/cmtools/scripts/misc/vobmgr/bin/createDBOMattribute.pl   \
+-vob /cdb/wcs45nm -dbm a0875303 -bu WTBU -bucontact "a0875303" -lsf NO -site_code BANGALORE -replica
+
+
+
+
+Add or Remove Groups
+
+
+Sometimes the requestor asks that only certain groups have access to the replica. Here is an example where groups are removed: 
+/usr/atria/bin/cleartool protectvob -delete_group linasic, ankoor, omapaccs,mmgps <VOB storage path>
+
+
+
+

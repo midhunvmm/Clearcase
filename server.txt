@@ -1,0 +1,38 @@
+To check the vob or view server
+********************************
+ct lsvob -s >> vobs.txt
+
+dbdlinlogin102.india.ti.com[110]% foreach i ( `cat vobs.txt` )
+foreach? ct desc vob:$i |grep 'host'
+foreach? end
+
+
+Clearcase vob servers:
+***********************
+***ccasexsvr1.india.ti.com
+***ccasexsvr4.india.ti.com
+***ccasexsvr7.india.ti.com
+***ccasexsvr8.india.ti.com
+***ccasexsvr9.india.ti.com
+**ccasexsvr10.india.ti.com
+**ccasexsvr11.india.ti.com
+**ccasexsvr12.india.ti.com
+ccasexsvr20-a.india.ti.com
+
+
+ccvayuviewsvr1.india.ti.com
+ccvayuviewsvr2.india.ti.com
+
+Design sync Servers
+===================
+
+Syncsvr01.india.ti.com
+Syncsvr02.india.ti.com
+Syncsvr03.india.ti.com
+Syncsvr06.india.ti.com
+Syncsvr07.india.ti.com
+Syncsvr09.india.ti.com
+Syncsvr13.india.ti.com
+Syncsvr15.india.ti.com
+Syncsvr17.india.ti.com
+

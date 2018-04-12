@@ -1,0 +1,448 @@
+Linux commands:
+***************		   
+1)cat  /etc/*release       it will show the system artitechure
+EXAMPLE:  banglinlogin25.india.ti.com[25]% cat /etc/*release
+SUSE Linux Enterprise Server 11 (x86_64)
+VERSION = 11
+PATCHLEVEL = 2
+LSB_VERSION="core-2.0-noarch:core-3.2-noarch:core-4.0-noarch:core-2.0-x86_64:core-3.2-x86_64:core-4.0-x86_64"
+
+
+
+2)# ls option argument
+	
+	argument:
+	-a -->lists all files, including those beginning with a dot
+	-l -->long listing: lists the mode, link information, owner, size, last modification (time). If
+			the file is a symbolic link, an arrow (-->) precedes the pathname of the linked-to file.
+	-d -->lists only names of directories, not the files in the directory
+	
+3)To list files according to size:
+
+ls -lS <file>
+Ex:
+ccaseadm@dbdlinlogin96:/clearcase/vb097/aec06$ls -lS
+total 80
+drwxr-xr-x 8 aeccm ankoor 1024 May 19 15:38 CHAMPION_REVC.vbs
+drwxr-xr-x 8 aeccm ankoor 1024 May 19 15:38 CONQUEROR_REVB.vbs
+drwxr-xr-x 8 aeccm ankoor 1024 Jun 14 10:07 GLADIATOR_REVD.vbs
+drwxr-xr-x 8 eda   ankoor 1024 May 19 15:37 Liveoak.vbs
+drwxr-xr-x 8 eda   ankoor 1024 May 19 15:37 Monterrey.vbs
+drwxr-xr-x 8 aeccm ankoor 1024 May 19 15:38 security_val.vbs
+
+
+4)interactive option(-i)
+if in a directory's subdirectory we want to delete specific files. we can use the interactive rm method.
+dbdlinlogin102.india.ti.com[171]% rm -ri Dir/
+rm: descend into directory `Dir'? y
+rm: descend into directory `Dir/dir3'? y
+
+it keep on asking which subdirectories/files we need to delete/keep.
+
+5)who --- tells you who's logged on
+
+finger username --- gives you lots of information about that user, e.g. when they last read their mail and whether they're logged in. Often people put other practical information, such as phone numbers and addresses, in a file called .plan. This information is also displayed by 'finger'.
+
+
+
+6)To know which is the server located use the command:
+
+nslookup <servername>
+
+dbdlinlogin06.india.ti.com[130]% nslookup sync1435.design.ti.com
+Server:         192.0.2.2
+Address:        192.0.2.2#53
+
+Non-authoritative answer:
+sync1435.design.ti.com  canonical name = dflds0204.dal.design.ti.com.
+Name:   dflds0204.dal.design.ti.com
+Address: 10.248.130.124
+
+
+7) Checking the Retired folder
+	cd to that clearcase path.
+	cd RETIRED
+	then ls -la
+
+8) To check unix account details:
+
+ypcat -k passwd|grep <id>
+
+dbdlinlogin102.india.ti.com[185]% ypcat -k passwd |grep x0249993
+x0249993 x0249993:x:37553:41945:Midhun VM,x0249993,Satish N,a0393318:/user/x0249993:/usr/local/bin/tcsh
+
+9) ypcat group |grep <group_name>
+
+
+10) To check any file in snapshot:
+
+	cd to that path.snapshot
+	and run 
+	find . -print |grep <file_name>
+
+
+
+	
+	
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Clearcase Commands:
+*******************
+
+1) /usr/atria/bin/cleartool hostinfo –l
+    ct hostinfo –l                                                   it will report both clearcase and operating system versions.
+banglinlogin25.india.ti.com[26]% ct hostinfo -l
+Client: banglinlogin25.india.ti.com
+  Product: ClearCase 8.0.1.8
+  Operating system: Linux 3.0.101-0.7.17-default #1 SMP Tue Feb 4 13:24:49 UTC 2014 (90aac76)
+  Hardware type: x86_64
+  Registry host: ccasergy.india.ti.com
+  Registry region: /apd
+  License host: 1775@apacccaselic.design.ti.com:1775@emeaccaselic.design.ti.com:1775@naccaselic.design.ti.com
+  
+  
+2) ct –ver
+banglinlogin25.india.ti.com[27]% ct -ver
+ClearCase version 8.0.1.1 (Fri Sep 20 16:09:14 EDT 2013) (8.0.1.01.00_2013C.FCS)
+ClearCase version 8.0.1.2 (Wed Dec 11 16:09:14 EDT 2013) (8.0.1.02.00_2013D.FCS)
+ClearCase version 8.0.1.3 (Wed Mar 19 00:31:17 EST 2014) (8.0.1.03.00_2014A.FCS)
+ClearCase version 8.0.1.3-iFix01 (Tue Apr 22 18:14:02 EDT 2014) (8.0.1.03.01_2014A.1.FCS)
+ClearCase version 8.0.1.04 (Thu Jun 24 22:31:13 EDT 2014) (8.0.1.04.00_2014B.FCS)
+ClearCase version 8.0.1.05 (Wed Sep 17 15:09:27 EDT 2014) (8.0.1.05.00_2014C.FCS)
+ClearCase version 8.0.1.06 (Tue Dec 11 22:31:02 EST 2014) (8.0.1.06.00_2014D.FCS)
+ClearCase version 8.0.1.07 (Wed Mar 18 00:31:02 EST 2015) (8.0.1.07.00_2015A.FCS)
+ClearCase version 8.0.1.08 (Thu Jun 11 22:30:58 EDT 2015) (8.0.1.08.00_2015B.D150611)
+@(#) MVFS version 8.0.1.8 (Fri May 22 23:13:40 2015) built at $Date: 2015-05-23.03:28:04 (UTC) $
+cleartool                         8.0.1.8 (Tue Jun 2 23:34:08 2015)
+db_server                         8.0.1.8 (Tue Jun 2 23:32:49 2015)
+VOB database schema versions: 54, 80
+
+
+3) ct ls –l    Using current view, show files, private files, file version and rule.
+banglinlogin25.india.ti.com[65]% ct ls -l   
+      
+version                         1@@/main/1                                                 Rule: element * /main/LATEST
+directory version      Chandra@@/main/3                                     Rule: element * /main/LATEST
+directory version      IPdevelopmentDMM@@/main/1              Rule: element * /main/LATEST
+directory version      SYED@@/main/2                                           Rule: element * /main/LATEST
+directory version      TITest@@/main/2                                         Rule: element * /main/LATEST
+directory version      Yuvaraj@@/main/6                                      Rule: element * /main/LATEST
+
+4) ct lsvob     it will list the vobs in the logged in system server (banglinlogin25.india.ti.com) 
+banglinlogin25.india.ti.com[41]% ct ls vob                                                              
+  /vobs/tenor_dft      /clearcase/vb007/aec01/tenor_dft.vbs public (replicated)                                                                
+* /vobs/altius         /clearcase/vb041/wtbu28/altius.vbs public (replicated)                                                                  
+  /vobs/mica_ip        /clearcase/vb093/ads01/mica_ip.vbs public (replicated)                                                                  
+  /vobs/a2i200         /clearcase/vb093/ads01/a2i200.vbs public (replicated)                                                                   
+  
+* symbol  means  it is mounted. 
+
+5) ct lsvob | wc –l      it will show the number of vobs in the present logged in system server.
+banglinlogin25.india.ti.com[110]% ct lsvob | wc -l
+2006
+
+6) ct lsvob –host <servername> | wc –l    It will show the number of vobs in a particular server.	
+banglinlogin25.india.ti.com[96]% ct lsvob -host ccasexsvr1.india.ti.com | wc -l
+134
+
+
+7) ct lsview <view tag>      It will list view path.
+banglinlogin25.india.ti.com[114]% ct lsview LATEST
+* LATEST               /ccasestore/itsvobstore1/its01/LATEST.vws
+
+8)ct pwv   to know the current set view.
+banglinlogin25.india.ti.com[134]% ct pwv
+Working directory view: LATEST
+Set view: LATEST
+
+9) ct desc vob:<vob tag>   to describe the vob.
+banglinlogin25.india.ti.com[65]% ct desc vob:/vobs/ccaseadm
+versioned object base "/vobs/ccaseadm"
+  created 2001-08-08T20:30:06+05:30 by Super-User (root.other@ccaseapd)
+  "VOB for Texas Instruments India ClearCase Administration team."
+  master replica: Bangalore@/vobs/ccaseadm
+  replica name: Bangalore
+  VOB family feature level: 5
+  VOB storage host:pathname "ccasexsvr1.india.ti.com:/ccasestore/itsvobstore1/its01/ccaseadm.vbs"
+  VOB storage global pathname "/clearcase/vb073/its01/ccaseadm.vbs"
+  database schema version: 54
+  modification by remote privileged user: allowed
+  atomic checkin: disabled
+  VOB ownership:
+    owner india.ti.com/ccaseadm
+    group india.ti.com/sys_mng
+  Additional groups:
+    group india.ti.com/xdais
+  ACLs enabled: No
+  Attributes:
+    FeatureLevel = 5
+
+
+10) ct lsview –l –pro –full <view tag>
+banglinlogin25.india.ti.com[26]% ct lsview -l -full -pro LATEST
+Tag: LATEST
+  Global path: /ccasestore/itsvobstore1/its01/LATEST.vws
+  Server host: ccasexsvr1.india.ti.com
+  Region: /apd
+  Active: YES
+  View tag uuid:acb03c84.b45911e5.8db3.00:18:71:85:3a:f9
+View on host: ccasexsvr1.india.ti.com
+View server access path: /ccasestore/itsvobstore1/its01/LATEST.vws
+View uuid: acb03c84.b45911e5.8db3.00:18:71:85:3a:f9
+View owner: india.ti.com/a0131677
+Created 2016-01-06T15:05:25+05:30 by a0131677.sys_mng@ccasexsvr1.india.ti.com
+Last modified 2016-05-02T15:40:52+05:30 by x0194859.generic@banglinlogin19
+Last accessed 2016-05-02T15:40:52+05:30 by x0194859.generic@banglinlogin19
+Last config spec update 2016-01-06T15:05:25+05:30 by a0131677.sys_mng@bdbtplindt0200
+Last view private object update 2016-05-02T15:40:52+05:30 by x0194859.generic@banglinlogin19
+Text mode: unix
+Properties: dynamic readwrite shareable_dos
+Owner: SOLARIS.india.ti.com/a0131677 : rwx (all)
+Group: SOLARIS.india.ti.com/sys_mng : rwx (all)
+Other:                  : r-x (read)
+Additional groups: SOLARIS.india.ti.com/lsf SOLARIS.india.ti.com/unixadm
+
+
+11) ct co filename     To checkout a file name
+banglinlogin25.india.ti.com[33]% ct co Yuvaraj
+Checkout comments for "Yuvaraj":
+.
+ENTER
+banglinlogin25.india.ti.com[46]% ct co -nc Yuvaraj
+Checked out "Yuvaraj" from version "/main/6".
+
+12) ct co –version filename@@/main/1   To checkout a particular version.
+
+banglinlogin25.india.ti.com[58]% ct co -version Yuvaraj@@/main/4
+Checkout comments for "Yuvaraj":
+.
+cleartool: Warning: Version checked out ("/main/4") is different from version selected by view before checkout ("/main/8").
+Checked out "Yuvaraj" from version "/main/4".
+
+13) cat filename @@/main/1    To display a particular version of a file.
+
+banglinlogin25.india.ti.com[49]% cat cc_testing.txt@@/main/2
+this is clearcase testing on cmadmsvr03.india.ti.com machine.
+
+This testing is done by Shivakumar S
+This is for test
+
+14)ct ci filename     To checkin a file name.
+banglinlogin25.india.ti.com[34]% ct ci Yuvaraj
+Checkin comments for "Yuvaraj":
+.
+ENTER
+Checked in "Yuvaraj" version "/main/7"
+
+15) Cleartool rmver filename@@/main/LATEST: used to delete the latest version of file.
+banglinlogin25.india.ti.com[35]% ct rmver Yuvaraj@@/main/LATEST
+Removing these versions of "Yuvaraj":                          
+  /main/7                                                      
+Remove versions?  [no] Y                                       
+Removed versions of "Yuvaraj".	
+
+16)  ct catcs      To display the current config spec
+banglinlogin25.india.ti.com[36]% pwd
+/vobs/ccaseadm
+banglinlogin25.india.ti.com[37]% ct catcs
+element * CHECKEDOUT
+element * /main/LATEST
+
+17)ct edcs         To edit the config spec.
+
+18) ct setcs       To set the config spec.
+
+19) ct ls filename    it will list the latest version of a file/files along with the rule and also the status of a file whether it is checked out.
+
+dbdlinlogin102.india.ti.com[115]% ct ls /vobs/ccaseadm/MIDHUN
+/vobs/ccaseadm/MIDHUN/test2.txt@@/main/CHECKEDOUT from /main/2              Rule: CHECKEDOUT
+/vobs/ccaseadm/MIDHUN/test3.txt@@/main/2                 					Rule: /main/LATEST
+/vobs/ccaseadm/MIDHUN/test4.txt@@/main/1                 					Rule: /main/LATEST
+
+
+
+20)ct lsvtree filename      it will list first and latest version. 
+dbdlinlogin102.india.ti.com[165]% ct lsvtree /vobs/ccaseadm/MIDHUN
+/vobs/ccaseadm/MIDHUN@@/main
+/vobs/ccaseadm/MIDHUN@@/main/5
+
+
+21) ct lsvtree -all filename - it will list from first to the latest. It will also list the version of the file whether it is checked out and also 	
+						    display the user who has checked out and also the view used to checkout that file.
+							
+dbdlinlogin102.india.ti.com[168]% ct lsvtree -al /vobs/ccaseadm/MIDHUN
+/vobs/ccaseadm/MIDHUN@@/main
+/vobs/ccaseadm/MIDHUN@@/main/0
+/vobs/ccaseadm/MIDHUN@@/main/1
+/vobs/ccaseadm/MIDHUN@@/main/2
+/vobs/ccaseadm/MIDHUN@@/main/3
+/vobs/ccaseadm/MIDHUN@@/main/4
+/vobs/ccaseadm/MIDHUN@@/main/5
+/vobs/ccaseadm/MIDHUN@@/main/CHECKEDOUT view "x0249993_view"
+
+
+22)  To know all the checkouts for a directory
+
+ct lsco -l <filename/directory_name>
+
+dbdlinlogin102.india.ti.com[177]% pwd
+/vobs/ccaseadm/MIDHUN
+dbdlinlogin102.india.ti.com[178]% ct lsco -l
+2018-04-09T15:05:12+05:30 Midhun VM (x0249993.sys_mng@dbdlinlogin102.india.ti.com)
+  checkout directory version "." from /main/5 (reserved)
+  by view: x0249993_view ("ccvayuviewsvr1.india.ti.com:/clearcase/vw010/wtbu05/x0249993/x0249993_view.vws")
+2018-04-09T15:06:13+05:30 Midhun VM (x0249993.sys_mng@dbdlinlogin102.india.ti.com)
+  checkout version "test2.txt" from /main/3 (reserved)
+  by view: x0249993_view ("ccvayuviewsvr1.india.ti.com:/clearcase/vw010/wtbu05/x0249993/x0249993_view.vws")
+2018-04-09T15:06:18+05:30 Midhun VM (x0249993.sys_mng@dbdlinlogin102.india.ti.com)
+  checkout version "test3.txt" from /main/3 (reserved)
+  by view: x0249993_view ("ccvayuviewsvr1.india.ti.com:/clearcase/vw010/wtbu05/x0249993/x0249993_view.vws")
+2018-04-09T15:06:25+05:30 Midhun VM (x0249993.sys_mng@dbdlinlogin102.india.ti.com)
+  checkout version "test4.txt" from /main/2 (reserved)
+  by view: x0249993_view ("ccvayuviewsvr1.india.ti.com:/clearcase/vw010/wtbu05/x0249993/x0249993_view.vws")
+
+
+23) ct lsprivate   List all the view private files. (view private files are the files which has been checked out from the vob or if you create a new file and did not check in it becomes a view private file)
+
+dbdlinlogin102.india.ti.com[179]% ct lsprivate
+/vobs/ccaseadm/MIDHUN/test2.txt  [checkedout]
+/vobs/ccaseadm/MIDHUN/test3.txt  [checkedout]
+/vobs/ccaseadm/MIDHUN/test4.txt  [checkedout]
+ 
+24)  To know the history of the file/files in a particular directory.
+
+	ct ls history <directory name/filename>
+
+	dbdlinlogin102.india.ti.com[182]% ct lshistory /vobs/ccaseadm/MIDHUN/test2.txt
+	
+	--04-09T15:06  x0249993   checkout version "test2.txt" from /main/3 (reserved)
+	--04-09T14:59  x0249993   create version "test2.txt@@/main/3"
+	--12-19T12:04  x0249993   create version "test2.txt@@/main/2"
+	--12-19T12:03  x0249993   create version "test2.txt@@/main/1" (label5)
+	--09-12T13:21  x0249993   create version "test2.txt@@/main/0"
+	--09-12T13:21  x0249993   create branch "test2.txt@@/main"
+	--09-12T13:21  x0249993   create file element "test2.txt@@"
+
+
+25)To check any file in snapshot
+
+If it is a clearcase object like /vobs/hpasystems/4T4R/PG1p4/Test/test_script/DSA_MM_LIBRARY/dsa_mm_gen_script.pl
+
+we need to get the view and run (view.vws/.s/.snapshot)
+ for example here the view and the view path is a0132070_view /clearcase/vw007/wtbu02/a0132070/a0132070_view.vws
+ 
+ so we need to go to /clearcase/vw007/wtbu02/a0132070/a0132070_view.vws/.s/.snapshot
+ and find that particular file using:
+ 
+ 
+dbdlinlogin10.india.ti.com[261]% find . -print |grep dsa_mm_gen_script.pl
+
+then it will show the path in the snapshot, from there we have to copy that file to the required folder.
+
+26)To check the views deleted from aging
+
+#cd /clearcase/stats/view_aging
+find . -type f -exec grep -H 'view_tag' {} \;	
+
+27)avoid view retirement
+/opt/rational/clearcase/bin/cleartool setcs -current -tag <view_tag> First try in root if not try with user id.
+
+
+28)To get the cache details for a view 
+
+/usr/atria/bin/cleartool getcache -view <view_tag>
+
+29)To increase the cache run: (KB : 50276)
+
+/usr/atria/bin/cleartool setcache -view -cachesize 40m <view_tag>
+
+30)To know the space of the vob:
+cleartool space -vob /vobs/ccaseadm
+
+31)how to find the clearcase license server
+lmstat [options]
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+Windows
+********
+
+TO CHECK THE GROUP 
+
+)net user /domain x0249993     or    net user <id> /domain
+
+)net group wdc /domain | find "x0164327" /I  for a particular group in users id
+
+  
+Describe vob in windows
+cleartool desc vob:<vob_tag>
+
+
+list the view 
+cleartool lsview -l -ful -pro <view_tag>
+
+To start a view
+1> Go to the drive letter where clearcase view resides (for my view x0249993_view, its in Z) (drive letter should be set at the time of creating a view shorcut).
+
+C:\Windows\System32>Z:
+
+then run the command:
+	
+Z:\>cleartool startview x0249993_view
+Z:\>cleartool
+cleartool> pwv
+Working directory view: x0249993_view
+Set view: x0249993_view
+
+
+cleartool lsview|find "x0249993"
+cleartool lsvob|find "ccaseadm"
+
+
+) To check the serial number:
+wmic bios get serialnumber
+
+
+Setting the primary group
+*************************
+1.  Open a command prompt as administrator on your PC
+2.  Enter the command:
+reg add HKEY_CURRENT_USER\Environment -v CLEARCASE_PRIMARY_GROUP -t REG_SZ -d ENT\<group_name> -f
+3.  Verify it has been set:
+reg query HKEY_CURRENT_USER\Environment -v CLEARCASE_PRIMARY_GROUP
+
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+LDAP
+****
+ct lsview –reg  reg_nt | grep a0132361 (Windows)
+
+ct lsview | grep -i a0131926 (Linux)
+
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+
+Storage
+*******
+
+ypcat -k auto_home | grep x0249993
+dbdlinlogin102.india.ti.com[207]% ypcat -k auto_home | grep x0249993
+x0249993 bheem.india.ti.com:/ifs/design/xpool/home/export11/x0249993
+
+dbdlinlogin96.india.ti.com[105]% df -h /clearcase/vw001/swcoe01/x0249993/midhun_view.vws/midhun_view.vws
+Filesystem            Size  Used Avail Use% Mounted on
+fort3.india.ti.com:/vol/fvol24/site_ccase_vw001
+                      230G  139G   92G  61% /clearcase/vw001
+
+dbdlinlogin96.india.ti.com[106]% ypcat -k auto_clearcase|grep vw001
+sugumar fort3.india.ti.com:/vol/fvol24/site_ccase_vw001/a0131757/sugumar/vobs/sugumar
+vw001 fort3.india.ti.com:/vol/fvol24/site_ccase_vw001
+arch_vw001 ghatu.india.ti.com:/ifs/design/nlpool/ccasestore/export2/wtbu_archiveviews1
+bkp_vw001 shed3.india.ti.com:/vol/fvol20/site_ccase_bkp_vw001

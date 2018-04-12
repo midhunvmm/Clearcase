@@ -1,0 +1,54 @@
+Note:
+
+Regarding Reqmastership.
+************************
+
+if mastership is enabled from one site to another (say israel to bangalore) and one user is trying to request mastership for a branch and if it is showing some errors like:
+
+a0131732@dbdlinlogin09[penchal_view]:/vobs/tcecs/modules/tc_3300_core_dig$ ct reqmaster /vobs/tcecs/modules/tc_3300_core_dig/PD@@/main                                                                                                                  
+cleartool: Error:  /vobs/tcecs/modules/tc_3300_core_dig/PD@@/main                                                           
+The following blocked the "reqmaster" operation at replica "Israel".                                                        
+    The object was not found at the sibling replica.                                                                        
+    This may indicate that the replicas are not in sync.   
+
+So this means that there is some sync issues b/w the two site which can be checked using command mt lsepoch -invob /vobs/tcecs | grep -v del
+
+for example:
+a0131732@dbdlinlogin09[penchal_view]:/vobs/tcecs/modules/tc_3300_core_dig$ mt lsepoch -invob /vobs/tcecs | grep -v del
+For VOB replica "/vobs/tcecs":                                                                                        
+Oplog IDs for row "Bangalore" (@ ccasexsvr13.india.ti.com):                                                           
+ oid:78ca2754.832511e6.8f44.00:01:79:12:ab:35=35          (Bangalore)                                                 
+ oid:78ca2758.832511e6.8f44.00:01:79:12:ab:35=0           (Bangalore_backup)                                          
+ oid:c3d2f960.023f11e6.806e.00:01:bf:35:cf:16=26306       (Israel)                                                    
+ oid:41a657d8.025011e6.9367.00:01:bf:35:cf:16=0           (Israel_BACKUP) 
+Oplog IDs for row "Israel" (@ ccvbs12.isr.asp.ti.com):                                                                
+ oid:78ca2754.832511e6.8f44.00:01:79:12:ab:35=29          (Bangalore)                                                 
+ oid:78ca2758.832511e6.8f44.00:01:79:12:ab:35=0           (Bangalore_backup)                                          
+ oid:c3d2f960.023f11e6.806e.00:01:bf:35:cf:16=26306       (Israel)                                                    
+ oid:41a657d8.025011e6.9367.00:01:bf:35:cf:16=0           (Israel_BACKUP) 
+
+It means that some of the packets (35 numbers) generated at bangalore was not present at israel (29 number), so once synching will take place , we can request mastership for a directory and it will give an output like
+
+a0131732@dbdlinlogin09[penchal_view]:/vobs/tcecs/modules/tc_3300_core_dig$ ct reqmaster /vobs/tcecs/modules/tc_3300_core_dig/PD@@/main                                                                                                                
+/vobs/tcecs/modules/tc_3300_core_dig/PD@@/main: Change of mastership at sibling replica "Israel" was successful.          
+Mastership is in transit to the new master replica.  
+
+Once we got the mastership we have to checkout that particular directory.
+for checking out that directory, first we have to cd to that directory path and then we have to execute the checkin operation
+
+For example
+
+a0131732@dbdlinlogin09[penchal_view]:/vobs/tcecs/modules/tc_3300_core_dig$ cd PD                                          
+a0131732@dbdlinlogin09[penchal_view]:/vobs/tcecs/modules/tc_3300_core_dig/PD$ ct co -nc .
+Checked out "." from version "/main/0". 
+
+and again if we wish to continue creating directories under this checked out directory, we have to follow the same procedures like.
+
+1. create the directory using the clearcase command : ct mkdir <directory_name>
+2. Request mastership for that directory Using the command: ct reqmaster <full_vobpath_till_that_file>
+3.If it fails, we have to check the epoch table using : mt lsepoch -invob <vob_tag>|grep -v del and compare the packets b/w the 2 sites and once the packets b/w 2 sites matches, then we have to try and execute the reqmaster command again.
+4. Once the reqmaster command is executed successfully, we have to cd that directory path and we have to checkout that directory.(If we don't do cd to that path, it will show error while doing the checkout).
+5. then we can create any files or directories under this directory.
+
+
+

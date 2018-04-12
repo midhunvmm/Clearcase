@@ -1,0 +1,140 @@
+﻿**************************************************Dallasviewcreation:***********************************************************
+
+Could you please follow the  below given steps for view creation.
+1. Before view creation user ID should be part of the mentioned VOB group.
+2. Go to the mentioned link, http://cm.design.ti.com/FAQ/doku.php?id=creating_and_managing_unix_hosted_views
+
+And try to create the views in the link.
+
+********************************************************VobCreation*************************************************************
+
+Pre Request :-
+
+If you wanted a vob to be created, Please raise a STARS request through http://ccvobmgr.design.ti.com
+.So that we would receive a vob creation request and then we can proceed furrther on this request.
+
+Hi <AID/XID>,
+
+VOB CREATION:
+Collect below detail from the user:
+	a) Approximate size of the vob growth in TII.
+	b) Time span of the vob in TII.
+	c) Ref vob tag
+check space of reference vobs using: ct space /vobs/attilaInt
+Check the total number of vobs hosted on the respective server
+	:ct lsvob -host ccasexsvr10.india.ti.com | wc -l
+
+login to the server where the vob count is less and create vob using the sudo script
+		a) ssh <ccasexsvr12>
+		& /proj/sudo/bin/sudo -l
+		b) ccasexsvr9-a[3]% /proj/sudo/bin/sudo /user/ccaseadm/clearcase/bin/createvob.pl
+Please Enter complete VOB TAG Name: /cdb/omap4450Int    ( <=vob 2nd name)
+Please Enter the vob Storage Directory (Enter complete .vbs path):/clearcase/vb082/wtbu46/omap4450Int.vbs
+Please Enter comment for creating the vob:Created by Midhun Requested by Indu(a0875147) #AR 15032144
+Please Enter Vob Owner:
+User's Primary group is "wdc". Do you want to create the the vob with the user's primary group (y/n):y.
+** Success in the vob creation**
+
+
+
+Next--- Raise two ticket's his ID for below category.
+		1.VOB Replication 
+		2.Additional group Deletion and Permission change 775 to 771.
+		and LDAP entry mail to L2 team.
+
+*******************************************************Eclipsedfile*************************************************************
+
+If a view-private file(when a file is checkout by a user it becomoes view private file and remains as the view private until it is checked in,
+when it is checked in it becomes a vob element and a new version is created) and a vob element exists with the same name then the vob element 
+is noticed as Eclipsed file.
+
+For solving this 
+
+Rename the Eclipsed file will resolve the issue.
+
+*************************************************Checkedoutbutremoved***********************************************************
+
+This isssue comes when an element is checkedout from the vob location and is deleted or moved from the view.
+$ ct ls
+test.txt@@/main/CHECKEDOUT from /main/2 [checkedout but removed] --------------->ERROR.
+
+The element is still in it's original location. You don't see it because you 'deleted' the private checkout (by deleting or moving it from our view.) Everyone else can see the element in the original location.
+
+Resolution
+***********
+1) Check whether the vob is mounted or not using the command:
+   ct lsvob <vob tag>
+   dbdlinlogin04.india.ti.com[103]% ct lsvob /vobs/ccaseadm
+  /vobs/ccaseadm       /ccasestore/itsvobstore1/its01/ccaseadm.vbs public (replicated)
+  
+  If it is not mounted mount the vob using
+  ct mount<vob tag>
+  
+2) Uncheckout the element by using the command :
+  ct unco<element>
+   
+   Then again do the checkout
+   ct co -nc <element>
+   
+   and then checkin the element
+   ct ci -nc <element>
+   
+   Then this issue will be resolved...
+   
+   Then there will be a error, because we are check in an element without editing anything and while checkin that element it will show an error like 
+   cleartool: Error: By default, won't create version with data identical to predecessor.
+   for that use the command :
+   
+   ct ci -ident  <filename>
+   
+
+
+******************************windowsclearcaseinstallationandpostinstallationsettings*******************************************
+
+once the installation has been completed.
+
+go to any local directory. (say D drive)
+create a folder called view store - right click to go the properties-click on sharing button - click on share - in the box give "clearcase" and press on add button and once it is added give read/write permission- give share and apply ok.
+
+Now come to the rational clearcase application- go to toolbox- give create view- give the name of the view and in advanced properties browse for the path that we have shared and inside that create a file with the same name as that of the view tag.
+give ok and it is done.
+
+**************************************************ClearcaseLicensing************************************************************
+
+ClearCase Licensing uses an active-user floating license scheme. A user must obtain a license, which grants the privilege to use Rational® ClearCase® on any host served by the same license server.
+When a user runs a Rational ClearCase client utility, such as cleartool or a GUI program, that utility attempts to obtain a license. If it gets one, the user can keep the license for an extended period. Entering any Rational ClearCase command renews the license. If the user does not enter a Rational ClearCase command for a substantial period—by default, 60 minutes—another user can take the license.
+
+Whenever a user runs a Rational ClearCase command that requires a license, a license-verification check is made. If the user has a license, the command runs. If the user does not have a license, the following steps occur:
+1) The Rational ClearCase client software looks for the name of the license server host.
+2) The command communicates with the license server process on the license server host, to see whether the user can get a license. (The license 	 server process is actually the albd_server, performing these duties in addition to its other tasks.)
+3) If a license is available, the license server grants the user a license and the command runs. The license remains valid as long as it is used at least once per time-out period. (The default time-out period is 60 minutes.)
+4) If no license is available, the command displays an error message and exits.
+
+Run : cc.cpl
+
+Licensing
+
+Rational License key administrator
+
+Next
+
+client/server configuration
+
+search order : Server Name :emeaccaselic.design.ti.com
+                             Port : 1775
+                            Sever Name: naccaselic.design.ti.com
+                            Port : 1775
+
+*******************************************************************************************************************************
+
+									MVFS
+								   ******	
+The MultiVersion File System (MVFS) creates a virtual file system specifically designed for accessing data within a Rational ClearCase VOB. 
+
+When you start a view and mount a VOB, remote procedure calls (RPC) are made to the view to determine which cleartext files should be presented to the user. 
+
+After the MVFS gets a file name and caches it, the operating system (OS) opens a call to the underlying file system where the view or the VOB storage directory resides.
+
+The MVFS runs in the operating system kernel and cannot be stopped or started independently of the OS. Thus, to stop and restart the MVFS on UNIX, Linux or Windows, you must shut down and restart the computer.
+
+The MVFS extends the host’s native operating system to provide file system support for dynamic views. A dynamic view is an MVFS directory that enables dynamic access to VOB elements. Dynamic views use the MVFS to present a selected combination of local and remote files as if they were stored in the native file system. 

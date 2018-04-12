@@ -1,0 +1,404 @@
+Installing clearcase
+*******************
+
+1. Install IM
+	cd to the path where we Extract IM package:
+	cd /apps/ibm/IM/1.5.3/sol_x86
+	Then do:
+	./install --launcher.ini silent-install.ini -acceptLicense 
+	
+After IM installation it will create a folder at Location /opt/IBM/InstallationManager/eclipse
+	
+	cd to that location and run
+	cd /opt/IBM/InstallationManager/eclipse/IBMIM --launcher.ini silent-install.ini -input/<path for the response file>/sol_x86/install-client.xml -nosplash -showverboseprogress -acceptLicense
+
+Schema version
+**************	
+Each VOB has a database schema version that defines the format of the VOB database and therefore determines the types of data and metadata that the VOB can store.
+
+New schema versions are introduced very rarely and schema version numbers are not necessarily sequential. All supported versions of Rational ClearCase support schema version 54, which provides support for VOB database files larger than 2GB. 
+======================================================================================================================================================
+
+Vob creation.
+*************
+Describe the reference vob:
+
+/usr/atria/bin/cleartool desc vob:<reference_vob_tag>
+
+Get the server, storage path and the group details.
+
+for creating the vob run:
+
+/usr/atria/bin/cleartool mkvob -tag <vob_tag> -public -password "<registrypassword>" -host <server_name> -hpath <storage_Qtree_path>
+-gpath <storage_Qtree_path> <storage_Qtree_path>
+
+Registry password: ***********
+
+The above command should be run by switching to the profile who will be the owner for the vob and also setting the required group as the primary group.
+
+–hpath is the  host-storage-pname: A standard full path name to the server storage location that is valid on the specified host.
+
+–gpath is the global-storage-pname: A standard full path name to the server storage location that is valid in the target network 
+region for all client hosts that are to access the server storage location.
+
+
+Example: 
+
+dbdlinlogin102.india.ti.com[151]% ct mkvob -tag /vobs/midhun_test -public -host ccasexsvr20-a.india.ti.com -hpath /clearcase/vb039/wtbu26/midhun_test.vbs -gpath /clearcase/vb039/wtbu26/midhun_test.vbs /clearcase/vb039/wtbu26/midhun_test.vbs        
+cleartool: Warning: Storage pathname "/clearcase/vb039/wtbu26" may not reside on host "ccasexsvr20-a.india.ti.com".         
+Registry password: Octy2k6                                                                                                       
+Comments for "/clearcase/vb039/wtbu26/midhun_test.vbs":                                                                     
+test vob                                                                                                                    
+.                                                                                                                           
+cleartool: Warning: File system "s/sdft" does not support ACLs: Access control list too long, storage pool file system misconfigured for ACLs, or unknown user/group in ACL.                                                                            
+cleartool: Warning: File system "d/ddft" does not support ACLs: Access control list too long, storage pool file system misconfigured for ACLs, or unknown user/group in ACL.                                                                            
+cleartool: Warning: File system "c/cdft" does not support ACLs: Access control list too long, storage pool file system misconfigured for ACLs, or unknown user/group in ACL.                                                                            
+Created versioned object base.                                                                                              
+Host-local path: ccasexsvr20-a.india.ti.com:/clearcase/vb039/wtbu26/midhun_test.vbs                                         
+Global path:     /clearcase/vb039/wtbu26/midhun_test.vbs                                                                    
+VOB schema:        80                                                                                                       
+VOB feature level: 8                                                                                                        
+VOB ownership:                                                                                                              
+  owner india.ti.com/x0249993                                                                                               
+  group india.ti.com/sys_mng                                                                                                
+Additional groups:                                                                                                          
+  group india.ti.com/tiiwsadm                                                                                               
+  group india.ti.com/tiicml1                                                                                                
+
+VOBs have special data backup considerations.  For more information on how to
+back up your VOB properly, see the documentation for administering ClearCase.
+If the backups aren't done properly, you are putting your data at risk!  
+================================================================================================================================
+Vob ownership procedure
+***********************
+
+/usr/atria/bin/cleartool protectvob -chown ucmcm -chgrp swcoe /clearcase/vb004/swcoe02/sim/sim_test.vbs 
+
+/usr/atria/bin/cleartool protect -chmod 771 /vobs/sds/sim_test
+
+
+
+/usr/atria/bin/cleartool setview   
+cd to vob   
+/usr/atria/bin/cleartool protect -chown wdccm -chgrp wdc  -r .   
+
+/usr/atria/bin/cleartool find . -nxn -all -exec '/usr/atria/bin/cleartool protect -chown ucmcm -chgrp swcoe "$CLEARCASE_PN"'
+
+
+# foreach i (` /usr/atria/bin/cleartool lspool -s`)
+foreach? /usr/atria/bin/cleartool protect -chown ucmcm -chgrp swcoe pool:$i 
+foreach? end
+
+
+foreach i ( `/usr/atria/bin/cleartool lstype -s -kind lbtype` ) 
+foreach? /usr/atria/bin/cleartool protect -chown ucmcm -chgrp swcoe lbtype:$i 
+foreach? end
+
+# foreach i ( `/usr/atria/bin/cleartool lstype -s -kind brtype` ) 
+foreach? /usr/atria/bin/cleartool protect -chown ucmcm -chgrp swcoe brtype:$i 
+foreach? end
+
+# foreach i ( `/usr/atria/bin/cleartool lstype -s -kind attype` ) 
+foreach? /usr/atria/bin/cleartool protect -chown ucmcm -chgrp swcoe attype:$i 
+foreach? end
+
+# foreach i ( `/usr/atria/bin/cleartool lstype -s -kind hltype` ) 
+foreach? /usr/atria/bin/cleartool protect -chown ucmcm -chgrp swcoe hltype:$i 
+foreach? end
+
+# foreach i ( `/usr/atria/bin/cleartool lstype -s -kind trtype` ) 
+foreach? /usr/atria/bin/cleartool protect -chown ucmcm -chgrp swcoe trtype:$i 
+foreach? end
+
+
+# foreach i ( `/usr/atria/bin/cleartool lstype -s -kind eltype` ) 
+foreach? /usr/atria/bin/cleartool protect -chown ucmcm -chgrp swcoe eltype:$i 
+foreach? end
+
+
+# foreach i (`/usr/atria/bin/cleartool lsreplica -s`)
+foreach? /usr/atria/bin/cleartool protect -chown ucmcm -chgrp swcoe replica:$i 
+foreach? End
+
+
+
+
+
+================================================================================================================================
+View creation
+*************
+
+Check the properties of the view using:
+
+/usr/atria/bin/cleartool lsview -l -ful -pro <reference_view_tag>
+
+Get the server, storage and the group details.
+
+for creation of view Run:
+
+/usr/atria/bin/cleartool mkview -tag<view_tag> -host <server_name> -hpath <Storage_qtree_path> -gpath <Storage_qtree_path> <Storage_qtree_path>
+
+The above command should be run by switching to the profile who will be the owner for the view and also setting the required group as the primary group.
+
+
+
+Snapshot view
++++++++++++++
+%ct mkview -snapshot -tag x0249993_snapshotview -host ccasexsvr20-a.india.ti.com -hpath /clearcase/vw010/wtbu05/x0249993/x0249993_snapshotview.vws -gpath /clearcase/vw010/wtbu05/x0249993/x0249993_snapshotview.vws -vws /clearcase/vw010/wtbu05/x0249993/x0249993_snapshotview.vws /clearcase/vw010/wtbu05/x0249993/x0249993_snapshotview
+
+cleartool: Warning: Storage pathname "/clearcase/vw010/wtbu05/x0249993" may not reside on host "ccasexsvr20-a.india.ti.com".
+Created view.
+Host-local path: ccasexsvr20-a.india.ti.com:/clearcase/vw010/wtbu05/x0249993/x0249993_snapshotview.vws
+Global path:     /clearcase/vw010/wtbu05/x0249993/x0249993_snapshotview.vws
+It has the following rights:
+User : x0249993 : rwx
+Group: sys_mng  : rwx
+Other:          : r-x
+Created snapshot view directory "/clearcase/vw010/wtbu05/x0249993/x0249993_snapshotview".
+
+
+In config spec of the snapshot view, load the directory u wish to take a snapshot. in below example /vobs/ccaseadm/MIDHUN is the directory we are creating a snapshot of:
+
+before that we have to edit config spec and add load /vobs/ccaseadm/MIDHUN in it and save the file and then while saving and exiting it will perform below actions:
+
+dbdlinlogin102.india.ti.com[131]% ct edcs -tag x0249993_snapshotview
+Set config spec and load snapshot view "x0249993_snapshotview"?  [yes] yes
+Making dir "vobs/ccaseadm/MIDHUN".                                        
+Processing dir "vobs/ccaseadm/MIDHUN".
+Loading "vobs/ccaseadm/MIDHUN/test1.txt" (18 bytes).
+Loading "vobs/ccaseadm/MIDHUN/test2.txt" (18 bytes).
+Loading "vobs/ccaseadm/MIDHUN/test3.txt" (20 bytes).
+Loading "vobs/ccaseadm/MIDHUN/test4.txt" (0 bytes).
+End dir "vobs/ccaseadm/MIDHUN".
+Done loading "/vobs/ccaseadm/MIDHUN" (Loaded 5 objects, copied 0 KB, skipped 0 unreadable objects).
+Summary:
+  Loaded Objects: 5 (0 skipped)
+  Total size: 0 KB
+Log has been written to "/clearcase/vw010/wtbu05/x0249993/x0249993_snapshotview/update.2018-03-22T14:26:05+05:30.updt".
+
+================================================================================================================================
+
+Label creation															*	Branch creation
+**************															*	***************		
+																		*
+2 steps																	*	2 steps:
+Create the label object													*   Create the branch
+Apply the label object													*	Apply the branch
+																		*
+For Creating the label object run:										*	For creating the branch Run
+/usr/atria/bin/cleartool mklbtype <label_name>							*	/usr/atria/bin/cleartool mkbrtype <branch_tag>
+																		*	
+For Applying the label run:												*	For Applying the branch Run:
+/usr/atria/bin/cleartool mklabel <label_name> file						*	/usr/atria/bin/cleartool mkbranch <branch_tag> file
+
+================================================================================================================================
+To change the ownership, permission, group
+
+For vob
+*******
+
+/usr/atria/bin/cleartool protectvob -r -chown <Vob Owner Name> -chmod <permission> -chgrp <group_name> -r <Globalpath/vobfile.vbs>
+
+For a file/element
+******************
+
+# /usr/atria/bin/cleartool protect -r -chown <owner> -chgrp <group> -chmod <permission> <filename>
+
+For view
+********
+
+/usr/atria/etc/utils/fix_prot -f -root -r -chown <username> -chgrp <group>  <view_storage_path> from users profile 
+
+For a trigger
+*************
+
+There are two general categories of ClearCase triggers:
+
+*Preoperation triggers fire before the designated ClearCase command is executed. For example, preoperation trigger on checkin can prompt you to add an appropriate comment.
+*Postoperation triggers fire after a ClearCase operation has completed and can take advantage of the operation's completion status. For example, a postoperation trigger on checkin can send an e-mail message indicating that a particular developer modified a particular element.
+
+Triggers can also automate a variety of process management functions. For example:
+*Applying attributes or attaching labels to objects when they are modified
+*Logging information that is not included in the Rational ClearCase event records
+*Initiating a build or source code analysis whenever particular objects are modified
+
+#/usr/atria/bin/cleartool protect -chown a0393639 trtype:<trigger_name>
+
+(To list the triggers applied to a vob:  #/usr/atria/bin/cleartool lstype -kind trtype -invob <vob_tag>)
+
+To disable all instances of a trigger, Lock the obsolute
+#cleartool lock -obsolete trtype:<trigger type name>
+
+Once the user has completed the desired operations, the trigger type can then be unlocked.
+#cleartool unlock trtype:<trigger type name>
+
+cleartool desc -long trtype:<trigger name>, In output if it is listing obsolete, it means the trigger is locked...
+
+#cleartool lstype -obsolete -kind trtype , to list all the triggers (both locked and unlocked)
+================================================================================================================================
+Locking and unlocking
+*********************
+
+lock a vob element or a vob
+/usr/atria/bin/cleartool lock vob:<vob_tag>
+
+Unlock a vob element or a vob
+/usr/atria/bin/cleartool unlock vob:<vob_tag>
+
+To list whether lock is applied for a vob:
+/usr/atria/bin/cleartool lslock vob:<vob_tag>
+
+================================================================================================================================
+1) Stop ClearCase
+
+/usr/atria/etc/atria_start stop
+
+2) Start ClearCase
+
+/usr/atria/etc/atria_start start
+
+# /opt/rational/clearcase/etc/clearcase is the script used which is linked to /usr/atria/etc/atria_start
+
+Also we can start/stop clearcase by starting/stoping clearcase service by using /etc/init.d/clearcase start/stop.
+================================================================================================================================
+
+File reserved checkout by a person who left and with the view which got deleted.
+
+reference link --- http://www-01.ibm.com/support/docview.wss?uid=swg21122515
+
+Use  #cleartool describe -long vob:<vob_tag> and get the uuid of the view which is used to checkout from that vob.
+
+Then use #cleartool rmview -uuid <uuid> -avobs to remove all the checked out references from all VOBs in that region. 
+
+Reserved checkout by a user who left with a view which already exists.
+
+1. switch to root
+2. set that view
+3. #ct unco <filename> or #ct ci -nc <filename>
+================================================================================================================================
+view deletion
+
+In Linux
+********
+#	ct lsview -l -ful -pro <view_tag>, get the uuid
+1. ct unreg -view -uuid <uuid> or #ct unreg -view <.vws path>
+2. ct  rmtag -view <view_name>
+3. ct rmview -f -all -uuid <uuid>
+
+In windows:
+***********
+
+While trying to create a view locally in windows clearcase, it is showing the below error,
+Error : A registry entry already exist for xo249993_windowsview
+
+Resolution:
+From command prompt Run the following coommands.
+
+1.>cleartool lsview -long <view-tag>
+it will list the view uuid.
+2.> cleartool unregister -view -uuid <uuid>
+it will remove view uuid
+3.> cleartool rmtag -view <view-tag>
+it will remove the view tag
+4.>cleartool rmview -force -all -uuid
+once it is done we can create the view with the same tag.
+================================================================================================================================
+Registering and tagging a view
+
+Register View : # /usr/atria/bin/cleartool reg -view -replace -host <Server Name> -hpath <filename.vws> <filename.vws>
+
+Make Tag 	  : # /usr/atria/bin/cleartool mktag -view -replace -tag <View Tag Name> -host <Server Name> -gpath <filename.vws> <filename.vws>
+================================================================================================================================
+Clearfsimport
+Is used to import file from a non-clearcase path to the clearcase path,
+
+copy the location of the local file (non-clearcase path file)
+
+set the proper view and change directory to the vob path where we want to import that file. Then use the command,
+
+# clearfsimport -r -master  -preview <source directory path> . 
+Remove -preview option and run the same command, once you are confirmed with the desired ouput 
+When you are running clearfsimport other than vob owner or root invoke the command with -nsetevent option
+
+Make a directory and all the directories/files inside that directory which is view-private(not a vob element) created under any vob path a vob element:
+
+set the view and go that path and run,
+
+# find <directoryname> | xargs cleartool mkelem -mkpath -nc
+
+All the files which are made part of the vob will be in checked out state, To check-in recursevely use the command:
+
+# /usr/atria/bin/cleartool find . -version 'version(/main/LATEST)' -exec 'cleartool ci -nc $CLEARCASE_PN'
+
+if it is showing error like:
+cleartool: Error: By default, won't create version with data identical to predecessor, then run the below command: 
+
+# /usr/atria/bin/cleartool find . -version 'version(/main/LATEST)' -exec 'cleartool ci -nc -ide $CLEARCASE_PN'
+================================================================================================================================
+To copy file from one location to another (used while view renaming and view restoration)
+
+switch to the owner of the new path and run:
+
+#/usr/bin/rsync -Sa <old_location> <New_location>
+================================================================================================================================
+To check the region
+
+#cat /var/log/rational/clearcase/config/rgy_region.conf, Edit and change (linux views are in /apd and windows views are in reg_nt)
+================================================================================================================================
+To check the space of the vob:
+
+#ct space -vob /vobs/ccaseadm
+=================================================================ViewRestoration================================================
+
+check in below path:
+
+cd /clearcase/stats/view_aging
+
+use the below command to find the file path:
+
+# find . -type f -exec grep -H '<view_tag>' {} \;
+
+For Example: /clearcase/vw007/wtbu02/a0875263/a0875263_view.vws -----> path.
+
+If file not present by using the above command check in .RETIRED folder and .snapshot:
+
+#cd /clearcase/vw007/RETIRED
+#ls
+a0875263_view.vws
+
+#cd /clearcase/vw007/wtbu02/a0875263/.snapshot
+
+Ok once we get the file copy to the new path using Rsync.
+
+#/usr/bin/rsync -Sa /archive/dock4_restore/midhun_restore/a0875263_view.vws /clearcase/vw007/wtbu02/a0875263 (new path)
+
+Once copied to the new path check gid and uid:
+
+#cd /clearcase/vw007/wtbu02/a0875263/a0875263_view.vws/.identity
+# touch gid
+#touch uid
+#chmod 2410 gid
+#chmod 4400 uid
+
+Then register and tag the new path:
+
+# /usr/atria/bin/cleartool reg -view -replace -host ccasexsvr13.india.ti.com -hpath /clearcase/vw007/wtbu02/a0875263/a0875263_view.vws /clearcase/vw007/wtbu02/a0875263/a0875263_view.vws
+
+# /usr/atria/bin/cleartool mktag -view -replace -tag a0875263_view -host ccasexsvr13.india.ti.com -gpath /clearcase/vw007/wtbu02/a0875263/a0875263_view.vws /clearcase/vw007/wtbu02/a0875263/a0875263_view.vws
+
+=========================================================ViewRenaming===========================================================
+
+1. cleartool endview -server <old_view_tag>
+
+2. cleartool rmtag -view <view-tag>
+
+3.cleartool unregister -view <view-storage-pname>.vws
+
+4.Rename the view storage directory using operating system commands:
+
+     mv <old-view-storage> <new-view-storage>.vws
+
+5. Register View : /usr/atria/bin/cleartool reg -view -replace -host <Server Name> 
+-hpath <filename.vws> <filename.vws>
+
+6. Make Tag : /usr/atria/bin/cleartool mktag -view -replace -tag <View Tag Name> -host <Server Name> -gpath <filename.vws> <filename.vws>
